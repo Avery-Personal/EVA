@@ -8,16 +8,27 @@ void UPDATE_Input(void) {
 
     g_State.PilotInput = 0.5f + 0.5f * sin(T) + Jitter;
 
-    if(g_State.PilotInput > 1.0f) g_State.PilotInput = 1.0f;
-    if(g_State.PilotInput < 0.0f) g_State.PilotInput = 0.0f;
+    if (g_State.PilotInput > 1.0f) g_State.PilotInput = 1.0f;
+    if (g_State.PilotInput < 0.0f) g_State.PilotInput = 0.0f;
 }
 
 void UPDATE_Sync(void) {
-    g_State.SyncRatio = 0.65f;
+    double Base = 0.65f;
+    double Oscillation = 0.05 * sin(0.02 * g_State.Tick);
+    
+    g_State.SyncRatio = (float)(Base + Oscillation);
+
+    if (g_State.SyncRatio > 1.0f) g_State.SyncRatio = 1.0f;
+    if (g_State.SyncRatio < 0.0f) g_State.SyncRatio = 0.0f;
 }
 
 void UPDATE_Actuator(void) {
-    g_State.ActuatorOutput = g_State.PilotInput * g_State.SyncRatio;
+    float Target = g_State.PilotInput * g_State.SyncRatio;
+
+    g_State.ActuatorOutput += ACTUATOR_SMOOTHING * (Target - g_State.ActuatorOutput);
+
+    if (g_State.ActuatorOutput > 1.0f) g_State.ActuatorOutput = 1.0f;
+    if (g_State.ActuatorOutput < 0.0f) g_State.ActuatorOutput = 0.0f;
 }
 
 // CHANGE FUNCTIONS

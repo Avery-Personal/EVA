@@ -9,6 +9,10 @@
 #include "../Logging/Logging.h"
 #include "../Config.h"
 
+// Constants
+
+#define ACTUATOR_SMOOTHING 0.1f
+
 // Systems
 
 void UPDATE_Input(void);
