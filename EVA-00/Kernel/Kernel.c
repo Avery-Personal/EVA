@@ -43,8 +43,14 @@ void CHANGE_Input(float Input) {
 // EVANGELION FUNCTIONS
 
 void EVA__Init(void) {
+    PILOT_Init();
     State_Reset();
     Timebase_Init();
+
+    g_State.PilotInput = 0.0f;
+    g_State.ActuatorOutput = 0.0f;
+    g_State.SyncRatio = 0.0f;
+    g_State.FaultDetected = false;
 
     printf("=== EVA-00 Initialized ===\n");
 }
@@ -62,6 +68,8 @@ void EVA__Simulate(void) {
         exit(EXIT_FAILURE);
     }
 
+    PILOT_Update();
+    
     UPDATE_Input();
     UPDATE_Sync();
     UPDATE_Actuator();

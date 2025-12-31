@@ -17,4 +17,8 @@ void PLog_Sync();
 void PLog_IsError();
 void PLog_PilotStatus();
 
+void PLog_EVA_Arm_Test();
+void PLog_EVA_Position();
+void PLog_EVA_Actions();
+
 #endif

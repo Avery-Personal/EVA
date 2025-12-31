@@ -35,7 +35,7 @@ void Log_FullState() {
         if (ErrorLT == true)
             ErrorLT = false;
 
-        printf("[TICK %i] Pilot Input: %.2f | Sync: %.2f | Output: %.2f | Running: %s | Faulted: %s\n", g_State.Tick, g_State.PilotInput, g_State.SyncRatio, g_State.ActuatorOutput, g_State.RUNNING ? "True" : "False", g_State.FaultDetected ? "True" : "False");
+        printf("[TICK %i] Pilot Input: %.2f | Sync: %.2f | Output: %.2f | FORW/BACK: %.2f | LEFT/RIGHT: %.2f | ARM HEIGHT: %.2f | Running: %s | Faulted: %s\n", g_State.Tick, g_State.PilotInput, g_State.SyncRatio, g_State.ActuatorOutput, g_State.PilotFB, g_State.PilotLR, g_State.PilotArm, g_State.RUNNING ? "True" : "False", g_State.FaultDetected ? "True" : "False");
     } else if (g_State.FaultDetected == true && ErrorLT == false) {
         Log_Error(1);
 
@@ -71,6 +71,32 @@ void PLog_IsError() {
 
 void PLog_PilotStatus() {
     printf("[EVA-00] Pilot Overall: %.2f | Sync: %.2f\n", g_State.PilotInput, g_State.SyncRatio);
+
+    fflush(stdout);
+}
+
+void PLog_EVA_Arm_Test() {
+    printf("[EVA-00] Center-Arm: %.2f\n", g_State.PilotArm);
+}
+
+void PLog_EVA_Position() {
+    if (g_State.PilotFB >= 0.0f && g_State.PilotLR >= 0.0f)
+        printf("[EVA-00] FORWARD: %.2f | RGHT: %.2f\n", g_State.PilotFB, g_State.PilotLR);
+        
+    if (g_State.PilotFB >= 0.0f && g_State.PilotLR <= 0.0f)
+        printf("[EVA-00] FORWARD: %.2f | LEFT: %.2f\n", g_State.PilotFB, g_State.PilotLR);
+        
+    if (g_State.PilotFB <= 0.0f && g_State.PilotLR <= 0.0f)
+        printf("[EVA-00] BCKWARD: %.2f | LEFT: %.2f\n", g_State.PilotFB, g_State.PilotLR);
+        
+    if (g_State.PilotFB <= 0.0f && g_State.PilotLR >= 0.0f)
+        printf("[EVA-00] BCKWARD: %.2f | RGHT: %.2f\n", g_State.PilotFB, g_State.PilotLR);
+
+    fflush(stdout);
+}
+
+void PLog_EVA_Actions() {
+    printf("[EVA-00] Attacking: %s | Stopping: %s\n", g_State.ACTION_Attack ? "YES" : "NO", g_State.ACTION_Stop ? "YES" : "NO");
 
     fflush(stdout);
 }

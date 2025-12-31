@@ -8,6 +8,7 @@
 #include "State.h"
 #include "../Logging/Logging.h"
 #include "../Config.h"
+#include "../Pilot/Pilot.h"
 
 // Constants
 

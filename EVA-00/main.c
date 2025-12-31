@@ -6,9 +6,9 @@ int main() {
 
     while (g_State.RUNNING) {
         EVA__Simulate();
-        Log_State();
+        PLog_EVA_Actions();
 
-        if (g_State.Tick >= 100)
+        if (g_State.Tick >= 250)
             g_State.RUNNING = false;
     }
 
