@@ -14,11 +14,12 @@
 
 #define ACTUATOR_SMOOTHING 0.1f
 
-// Systems
+// Updates
 
 void UPDATE_Input(void);
 void UPDATE_Sync(void);
 void UPDATE_Actuator(void);
+void UPDATE_RC(void);
 
 // Input Changes
 
@@ -28,10 +29,17 @@ void CHANGE_Input(float Input);
 
 void EVA__Init(void);
 void EVA__Shutdown(void);
-
+void EVA__Emergency_Shutdown(const char *Reason);
+void EVA__ForceStop(void);
 
 // Helper function to reduce later boilercode in testing
 void EVA__Simulate(void);
+
+// Systems
+
+void Systems_Update(void);
+void Systems_ShutdownTick(void);
+void Systems_EmergencyCut(void);
 
 void CHECK_Faults(void);
 

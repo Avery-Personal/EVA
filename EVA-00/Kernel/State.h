@@ -3,6 +3,15 @@
 
 #include <stdbool.h>
 
+typedef enum {
+    EVA_RUNNING = 0,
+
+    EVA_EMERGENCY_STOP,
+    EVA_FORCE_STOP,
+
+    EVA_SHUTDOWN,
+} EvaState_t;
+
 typedef struct {
     float PilotInput;
 
@@ -11,8 +20,12 @@ typedef struct {
     float PilotArm;
 
     float SyncRatio;
-    float ActuatorOutput;
+    float RejectionCoefficient;
 
+    float ActuatorOutput;
+    float ActuatorOutputLeft;
+    float ActuatorOutputRight;
+    
     // Actions
 
     bool ACTION_Attack;
@@ -21,9 +34,7 @@ typedef struct {
     // Settings
 
     bool FaultDetected;
-    bool RUNNING;
-
-    bool FORCE_STOP;
+    EvaState_t SystemState;
 
     int Tick;
 } EvaState;

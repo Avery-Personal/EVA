@@ -4,12 +4,14 @@ int main() {
     State_Reset();
     Timebase_Init();
 
-    while (g_State.RUNNING) {
+    while (g_State.SystemState == EVA_RUNNING) {
         EVA__Simulate();
-        PLog_EVA_Actions();
+        ALog_FullState();
 
-        if (g_State.Tick >= 250)
-            g_State.RUNNING = false;
+        if (g_State.Tick >= 750)
+            g_State.SystemState = EVA_SHUTDOWN;
+        
+        Timebase_SleepUntilNextTick();
     }
 
     return 0;

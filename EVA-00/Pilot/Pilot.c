@@ -22,8 +22,8 @@ void PILOT_Init(void) {
 void PILOT_Update(void) {
     g_State.ACTION_Attack = false;
     g_State.ACTION_Stop = false;
-    
-    if (!_kbhit)
+
+    if (!_kbhit())
         return;
 
     char Key = _getch();
@@ -42,7 +42,7 @@ void PILOT_Update(void) {
         case 'x': g_State.ACTION_Stop = true; break;
 
         case 27:
-            g_State.FORCE_STOP = true;
+            g_State.SystemState = EVA_SHUTDOWN;
             
             Log_Error(99);
             break;
