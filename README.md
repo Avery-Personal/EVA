@@ -11,5 +11,3 @@ Inspired by the concept of Evangelions from Neon Genesis Evangelion. All code is
 ## License
 
 EVA is licensed under ALEPU / ALPU, for extensive protection and letting me safely keep source code. 
-
-// Internal EVA unit simulation.
