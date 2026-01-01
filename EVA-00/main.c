@@ -6,7 +6,7 @@ int main() {
 
     while (g_State.SystemState == EVA_RUNNING) {
         EVA__Simulate();
-        ALog_FullState();
+        VLog_Auto();
 
         if (g_State.Tick >= 750)
             g_State.SystemState = EVA_SHUTDOWN;

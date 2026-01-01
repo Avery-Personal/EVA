@@ -41,6 +41,9 @@ void Systems_Update(void);
 void Systems_ShutdownTick(void);
 void Systems_EmergencyCut(void);
 
+// Error System
+
+void ERROR_Log(int Severity);
 void CHECK_Faults(void);
 
 #endif

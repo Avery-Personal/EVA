@@ -3,8 +3,6 @@
 static float LastSync = 0.0f;
 
 void UPDATE_Input(void) {
-    //g_State.PilotInput = 0.50f;
-
     float T = g_State.Tick * 0.01f;
     float Jitter = ((rand() % 101) / 1000.0f) - 0.05f;
 
@@ -80,7 +78,7 @@ void Systems_Update(void) {
     CHECK_Faults();
 
     if (g_State.FaultDetected == true)
-        EVA__Emergency_Shutdown("");
+        Log_Error(g_State.FaultCode);
 }
 
 void Systems_ShutdownTick(void) {
@@ -121,6 +119,12 @@ void ZERO_Actuators(void) {
 
 int Actuators_Saturated(void) {
     if (g_State.ActuatorOutput > 1.0f)
+        return 1;
+        
+    if (g_State.ActuatorOutputLeft > 1.0f)
+        return 1;
+        
+    if (g_State.ActuatorOutputRight > 1.0f)
         return 1;
     
     return 0;
@@ -198,22 +202,69 @@ void EVA__Simulate(void) {
     g_State.Tick++;
 }
 
+// Severity | 1 - Minor | 2 - Major | 3 - Shutdown
+void ERROR_Log(int Severity) {
+    if (Severity == 1) {
+        Log_Error(g_State.FaultCode);
+    } else if (Severity == 2) {
+        if (Actuators_Saturated() || g_State.PilotInput < 0.0f || g_State.PilotInput > 0.0f) {
+            printf("[EVA-00] MAJOR ERROR: EVA-Analysis Overflow/Pilot Input fualt\n");
+
+            g_State.SystemState = EVA_EMERGENCY_STOP;
+
+            ZERO_Actuators();
+            exit(EXIT_FAILURE);
+        }
+    } else if (Severity == 3) {
+        EVA__ForceStop();
+    }
+}
+
 void CHECK_Faults(void) {
-    if (g_State.ActuatorOutput > 1.0f || g_State.ActuatorOutput < -1.0f)
-        g_State.FaultDetected = true;
-    
-    if (g_State.SyncRatio > 1.0f || g_State.SyncRatio < 0.0f)
-        g_State.FaultDetected = true;
-    
-    if (g_State.PilotInput > 1.0f || g_State.PilotInput < 0.0f)
-        g_State.FaultDetected = true;
+    if (g_State.ActuatorOutput > 1.0f || g_State.ActuatorOutput < -1.0f) {
+        if (g_State.ActuatorOutput > 1.0f)
+            g_State.FaultCode = 1;
+        
+        if (g_State.ActuatorOutput < -1.0f)
+            g_State.FaultCode = 2;
 
-    if (g_State.RejectionCoefficient > 0.7f && (rand() % 100) < 10)
+        g_State.FaultDetected = true;
+    }
+
+    if (g_State.SyncRatio > 1.0f || g_State.SyncRatio < 0.0f) {
+        if (g_State.SyncRatio > 1.0f)
+            g_State.FaultCode = 3;
+        
+        if (g_State.SyncRatio < 0.0f)
+            g_State.FaultCode = 4;
+
+        g_State.FaultDetected = true;
+    }
+
+    if (g_State.PilotInput > 1.0f || g_State.PilotInput < 0.0f) {
+        if (g_State.PilotInput > 1.0f)
+            g_State.FaultCode = 5;
+        
+        if (g_State.PilotInput < 0.0f)
+            g_State.FaultCode = 6;
+
+        g_State.FaultDetected = true;
+    }
+
+    if (g_State.RejectionCoefficient > 0.7f && (rand() % 100) < 10) {
+        g_State.FaultCode = 7;
+
         return;
+    }
     
-    if (g_State.Tick >= MAX_TICKS)
+    if (g_State.Tick >= MAX_TICKS) {
         g_State.FaultDetected = true;
+        g_State.FaultCode = 8;
+    }
 
-    if (Actuators_Saturated())
+    if (Actuators_Saturated()) {
+        g_State.FaultCode = 9;
+
         EVA__Emergency_Shutdown("EVA SYSTEM READINGS MALFUCTION");
+    }
 }

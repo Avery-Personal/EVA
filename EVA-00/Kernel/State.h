@@ -12,7 +12,17 @@ typedef enum {
     EVA_SHUTDOWN,
 } EvaState_t;
 
-typedef struct {
+typedef enum {
+    EVA_BATTERY_PLUGGED,
+
+    EVA_BATTERY_SLOW,
+    EVA_BATTERY_NORMAL,
+    EVA_BATTERY_RACING,
+} EvaBatteryMode;
+
+typedef struct {    
+    // Pilot Data
+
     float PilotInput;
 
     float PilotFB;
@@ -22,10 +32,12 @@ typedef struct {
     float SyncRatio;
     float RejectionCoefficient;
 
+    // EVA x Pilot Output
+
     float ActuatorOutput;
     float ActuatorOutputLeft;
     float ActuatorOutputRight;
-    
+
     // Actions
 
     bool ACTION_Attack;
@@ -33,7 +45,13 @@ typedef struct {
 
     // Settings
 
+    double BatteryAmount;
+    EvaBatteryMode BatteryMode;
+
     bool FaultDetected;
+    int FaultCode;
+    int FaultSeverity;
+
     EvaState_t SystemState;
 
     int Tick;

@@ -51,6 +51,9 @@ void PILOT_Update(void) {
             break;
     }
 
+    g_State.ActuatorOutputLeft = g_State.PilotFB + g_State.PilotLR;
+    g_State.ActuatorOutputRight = g_State.PilotFB - g_State.PilotLR;
+
     if (g_State.PilotFB > 1.0f) g_State.PilotFB = 1.0f;
     if (g_State.PilotFB < -1.0f) g_State.PilotFB = -1.0f;
 
@@ -59,6 +62,12 @@ void PILOT_Update(void) {
 
     if (g_State.PilotArm > 1.0f) g_State.PilotArm = 1.0f;
     if (g_State.PilotArm < -1.0f) g_State.PilotArm = -1.0f;
+
+    if (g_State.ActuatorOutputLeft > 1.0f) g_State.ActuatorOutputLeft = 1.0f;
+    if (g_State.ActuatorOutputLeft < 0.0f) g_State.ActuatorOutputLeft = 0.0f;
+
+    if (g_State.ActuatorOutputRight > 1.0f) g_State.ActuatorOutputRight = 1.0f;
+    if (g_State.ActuatorOutputRight < 0.0f) g_State.ActuatorOutputRight = 0.0f;
 }
 
 void PILOT_Shutdown(void) {
