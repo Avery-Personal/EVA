@@ -1,14 +1,14 @@
 #include "Kernel/Kernel.h"
 
 int main() {
-    State_Reset();
-    Timebase_Init();
+    EVA__Init();
+    Boot_General();
 
     while (g_State.SystemState == EVA_RUNNING) {
         EVA__Simulate();
-        VLog_Auto();
+        ELog_HardwareStatistics();
 
-        if (g_State.Tick >= 2750)
+        if (g_State.Tick >= 1750)
             g_State.SystemState = EVA_SHUTDOWN;
         
         Timebase_SleepUntilNextTick();
