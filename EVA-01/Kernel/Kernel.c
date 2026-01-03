@@ -6,6 +6,32 @@ static float FB_Queue[MAX_LAG_TICKS];
 static float LR_Queue[MAX_LAG_TICKS];
 static int LagIndex = 0;
 
+static float BatteryDrainRate() {
+    switch (g_State.BatteryMode) {
+        case EVA_BATTERY_PLUGGED: return 0.0f;
+        case EVA_BATTERY_SLOW: return 100.0f / 43200.0f;
+        case EVA_BATTERY_NORMAL: return 100.0f / 300.0f;
+        case EVA_BATTERY_RACING: return 100.0f / 120.0f;
+        
+        default: return 0.0f;
+    }
+}
+
+void UPDATE_Battery(void) {
+    if (g_State.BatteryMode == EVA_BATTERY_PLUGGED)
+        return;
+
+    float DrainPerTick = BatteryDrainRate() * (float) TICK_DURATION;
+
+    g_State.BatteryLevel -= DrainPerTick;
+
+    if (g_State.BatteryLevel <= 0.0f) {
+        g_State.BatteryLevel = 0.0f;
+
+        g_State.SystemState = EVA_EMERGENCY_STOP;
+    }
+}
+
 void UPDATE_Input(void) {
     float T = g_State.Tick * 0.01f;
     float Jitter = ((rand() % 101) / 1000.0f) - 0.05f;
@@ -65,8 +91,8 @@ void UPDATE_Control(void) {
 void UPDATE_Locomotion(void) {
     float C = g_State.Responsiveness;
 
-    float TargetFB = g_State.Pilot.Move_X * g_State.Actuators.ActuatorOutput;
-    float TargetLR = g_State.Pilot.Move_Y * g_State.Actuators.ActuatorOutput;
+    float TargetFB = g_State.Pilot.Output.Move_X * g_State.Actuators.ActuatorOutput;
+    float TargetLR = g_State.Pilot.Output.Move_Y * g_State.Actuators.ActuatorOutput;
 
     float ResponseStep = C * (float) TICK_DURATION;
     if (ResponseStep > 1.0f) ResponseStep = 1.0f;
@@ -113,6 +139,7 @@ void CHANGE_Input(float Input) {
 void Systems_Update(void) {
     PILOT_Update();
 
+    UPDATE_Battery();
     UPDATE_Input();
     UPDATE_Sync();
     UPDATE_RC();
@@ -133,11 +160,11 @@ void Systems_ShutdownTick(void) {
         g_State.Actuators.ActuatorOutput = 0.0f;
 
     g_State.Pilot.Input = 0.0f;
-    g_State.Pilot.Move_Y = 0.0f;
-    g_State.Pilot.Move_X = 0.0f;
+    g_State.Pilot.Output.Move_Y = 0.0f;
+    g_State.Pilot.Output.Move_X = 0.0f;
 
-    g_State.Pilot.ArmL = 0.0f;
-    g_State.Pilot.ArmR = 0.0f;
+    g_State.Pilot.Output.ArmL = 0.0f;
+    g_State.Pilot.Output.ArmR = 0.0f;
 
     g_State.SyncRatio = g_State.SyncRatio;
     g_State.FaultDetected = false;
@@ -150,11 +177,11 @@ void Systems_EmergencyCut(void) {
     g_State.Actuators.ActuatorOutput = 0.0f;
 
     g_State.Pilot.Input = 0.0f;
-    g_State.Pilot.Move_Y = 0.0f;
-    g_State.Pilot.Move_X = 0.0f;
+    g_State.Pilot.Output.Move_Y = 0.0f;
+    g_State.Pilot.Output.Move_X = 0.0f;
 
-    g_State.Pilot.ArmL = 0.0f;
-    g_State.Pilot.ArmR = 0.0f;
+    g_State.Pilot.Output.ArmL = 0.0f;
+    g_State.Pilot.Output.ArmR = 0.0f;
 
     g_State.FaultDetected = true;
 

@@ -6,9 +6,9 @@ int main() {
 
     while (g_State.SystemState == EVA_RUNNING) {
         EVA__Simulate();
-        ELog_HardwareStatistics();
+        Log_FullState();
 
-        if (g_State.Tick >= 1750)
+        if (g_State.Tick >= MAX_TICKS)
             g_State.SystemState = EVA_SHUTDOWN;
         
         Timebase_SleepUntilNextTick();

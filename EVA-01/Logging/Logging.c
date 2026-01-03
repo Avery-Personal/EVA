@@ -62,8 +62,6 @@ void ClearScreen() {
 }
 
 void Log_State() {
-    ClearScreen();
-
     if (StartedLog == false && ErrorLT == false) {
         printf("=== EVA-00 STATISTICS ===\n\n");
 
@@ -74,7 +72,7 @@ void Log_State() {
         if (ErrorLT == true)
             ErrorLT = false;
 
-        printf("[TICK %i] Pilot Input: %.2f | Sync: %.2f | Output: %.2f | Faulted: %s\n", g_State.Tick, g_State.Pilot.Input, g_State.SyncRatio, g_State.Actuators.ActuatorOutput, g_State.FaultDetected ? "True" : "False");
+        printf("[TICK %i] Battery: %.2f | Pilot Input: %.2f | Sync: %.2f | Output: %.2f | Faulted: %s\n", g_State.BatteryLevel, g_State.Tick, g_State.Pilot.Input, g_State.SyncRatio, g_State.Actuators.ActuatorOutput, g_State.FaultDetected ? "True" : "False");
     } else if (g_State.FaultDetected == true && ErrorLT == false) {
         Log_Error(1);
 
@@ -85,8 +83,6 @@ void Log_State() {
 }
 
 void Log_FullState() {
-    ClearScreen();
-
     if (StartedLog == false && ErrorLT == false) {
         printf("=== EVA-00 STATISTICS ===\n\n");
 
@@ -97,7 +93,7 @@ void Log_FullState() {
         if (ErrorLT == true)
             ErrorLT = false;
 
-        printf("[TICK %i] Pilot Input: %.2f | Sync: %.2f | Output: %.2f | RC: %.2f | FORW/BACK: %.2f | LEFT/RIGHT: %.2f | L-ARM HEIGHT: %.2f | R-ARM HEIGHT: %.2f | System State: %s | Faulted: %s\n", g_State.Tick, g_State.Pilot.Input, g_State.SyncRatio, g_State.Actuators.ActuatorOutput, g_State.RejectionCoefficient, g_State.Pilot.Move_Y, g_State.Pilot.Move_X, g_State.Pilot.ArmL, g_State.Pilot.ArmR, EvaStateToString(g_State.SystemState), g_State.FaultDetected ? "True" : "False");
+        printf("[TICK %i] Pilot Input: %.2f | Sync: %.2f | Output: %.2f | RC: %.2f | FORW/BACK: %.2f | LEFT/RIGHT: %.2f | L-ARM HEIGHT: %.2f | R-ARM HEIGHT: %.2f | System State: %s | Battery: %.2f | Faulted: %s\n", g_State.Tick, g_State.Pilot.Input, g_State.SyncRatio, g_State.Actuators.ActuatorOutput, g_State.RejectionCoefficient, g_State.Pilot.Output.Move_Y, g_State.Pilot.Output.Move_X, g_State.Pilot.Output.ArmL, g_State.Pilot.Output.ArmR, EvaStateToString(g_State.SystemState), g_State.BatteryLevel, g_State.FaultDetected ? "True" : "False");
     } else if (g_State.FaultDetected == true && ErrorLT == false) {
         Log_Error(1);
 
@@ -138,7 +134,7 @@ void ELog_Life() {
 }
 
 void ELog_HardwareStatistics() {
-    printf("LIFETIME: %i | FB MOVEMENT: %.4f | LR MOVEMENT: %.4f | L-ARM MOVEMENT: %.4f | R-ARM MOVEMENT: %.4f | DELAY: %.4f | STATUS: %s | BATTERY LIFE: %.4f | ERROR DETECTED: %s\n", g_State.Tick, g_State.Pilot.Move_Y, g_State.Pilot.Move_X, g_State.Pilot.ArmL, g_State.Pilot.ArmR, g_State.Responsiveness, EvaStateToString(g_State.SystemState), g_State.BatteryLevel, g_State.FaultDetected ? "YES" : "NO");
+    printf("LIFETIME: %i | FB MOVEMENT: %.4f | LR MOVEMENT: %.4f | L-ARM MOVEMENT: %.4f | R-ARM MOVEMENT: %.4f | DELAY: %.4f | STATUS: %s | BATTERY LIFE: %.4f | ERROR DETECTED: %s\n", g_State.Tick, g_State.Pilot.Output.Move_Y, g_State.Pilot.Output.Move_X, g_State.Pilot.Output.ArmL, g_State.Pilot.Output.ArmR, g_State.Responsiveness, EvaStateToString(g_State.SystemState), g_State.BatteryLevel, g_State.FaultDetected ? "YES" : "NO");
 
     fflush(stdout);
 }
@@ -170,21 +166,21 @@ void PLog_PilotStatus() {
 }
 // [EVA-00] Left-Arm: 0.51 | Right-Arm: 0.72
 void PLog_EVA_Arm_Test() {
-    printf("[EVA-00] Left-Arm: %.2f | Right-Arm: %.2f\n", g_State.Pilot.ArmL, g_State.Pilot.ArmR);
+    printf("[EVA-00] Left-Arm: %.2f | Right-Arm: %.2f\n", g_State.Pilot.Output.ArmL, g_State.Pilot.Output.ArmR);
 }
 
 void PLog_EVA_Position() {
-    if (g_State.Pilot.Move_Y >= 0.0f && g_State.Pilot.Move_X >= 0.0f)
-        printf("[EVA-00] FORWARD: %.2f | RGHT: %.2f\n", g_State.Pilot.Move_Y, g_State.Pilot.Move_X);
+    if (g_State.Pilot.Output.Move_Y >= 0.0f && g_State.Pilot.Output.Move_X >= 0.0f)
+        printf("[EVA-00] FORWARD: %.2f | RGHT: %.2f\n", g_State.Pilot.Output.Move_Y, g_State.Pilot.Output.Move_X);
         
-    if (g_State.Pilot.Move_Y >= 0.0f && g_State.Pilot.Move_X <= 0.0f)
-        printf("[EVA-00] FORWARD: %.2f | LEFT: %.2f\n", g_State.Pilot.Move_Y, g_State.Pilot.Move_X);
+    if (g_State.Pilot.Output.Move_Y >= 0.0f && g_State.Pilot.Output.Move_X <= 0.0f)
+        printf("[EVA-00] FORWARD: %.2f | LEFT: %.2f\n", g_State.Pilot.Output.Move_Y, g_State.Pilot.Output.Move_X);
         
-    if (g_State.Pilot.Move_Y <= 0.0f && g_State.Pilot.Move_X <= 0.0f)
-        printf("[EVA-00] BCKWARD: %.2f | LEFT: %.2f\n", g_State.Pilot.Move_Y, g_State.Pilot.Move_X);
+    if (g_State.Pilot.Output.Move_Y <= 0.0f && g_State.Pilot.Output.Move_X <= 0.0f)
+        printf("[EVA-00] BCKWARD: %.2f | LEFT: %.2f\n", g_State.Pilot.Output.Move_Y, g_State.Pilot.Output.Move_X);
         
-    if (g_State.Pilot.Move_Y <= 0.0f && g_State.Pilot.Move_X >= 0.0f)
-        printf("[EVA-00] BCKWARD: %.2f | RGHT: %.2f\n", g_State.Pilot.Move_Y, g_State.Pilot.Move_X);
+    if (g_State.Pilot.Output.Move_Y <= 0.0f && g_State.Pilot.Output.Move_X >= 0.0f)
+        printf("[EVA-00] BCKWARD: %.2f | RGHT: %.2f\n", g_State.Pilot.Output.Move_Y, g_State.Pilot.Output.Move_X);
 
     fflush(stdout);
 }
@@ -259,14 +255,14 @@ const char *VLog_SyncHelper() {
 }
 
 const char *VLog_FBHelper() {
-    if (g_State.Pilot.Move_Y > 0.0f)
+    if (g_State.Pilot.Output.Move_Y > 0.0f)
         return "+";
 
     return " ";
 }
 
 const char *VLog_LRHelper() {
-    if (g_State.Pilot.Move_X > 0.0f)
+    if (g_State.Pilot.Output.Move_X > 0.0f)
         return "+";
 
     return " ";
@@ -286,7 +282,7 @@ void VLog_Auto() {
     printf("TICK: %i\n", g_State.Tick);
     printf("===================\n");
     printf("SYNC RATIO: %s%.2f%s\n", VLog_SyncHelper(), g_State.SyncRatio, RESET);
-    printf("PILOT INPUT: AX=%s%.2f AY=%s%.2f\n", VLog_LRHelper(), g_State.Pilot.Move_X, VLog_FBHelper(), g_State.Pilot.Move_Y);
+    printf("PILOT INPUT: AX=%s%.2f AY=%s%.2f\n", VLog_LRHelper(), g_State.Pilot.Output.Move_X, VLog_FBHelper(), g_State.Pilot.Output.Move_Y);
     printf("ACTUATOR OUTPUT: L=%.2f R=%.2f\n", g_State.Actuators.ActuatorOutputLeft, g_State.Actuators.ActuatorOutputRight);
 
     if (g_State.FaultDetected) {

@@ -15,9 +15,13 @@ void Timebase_Init(void) {
 }
 
 void Timebase_Tick(void) {
-    SystemTime += TICK_DURATION;
+    LARGE_INTEGER Now;
+    QueryPerformanceCounter(&Now);
 
-    QueryPerformanceCounter(&LastTick);
+    double Elapsed = (double)(Now.QuadPart - LastTick.QuadPart) / (double) Frequency.QuadPart;
+
+    SystemTime += Elapsed;
+    LastTick = Now;
 }
 
 double Timebase_Get(void) {

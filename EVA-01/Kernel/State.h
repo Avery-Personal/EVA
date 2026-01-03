@@ -61,12 +61,31 @@ typedef struct {
 typedef struct {
     float Move_X;
     float Move_Y;
-
-    float Move_X_Previous;
-    float Move_Y_Previous;
-
+    
     float ArmL;
     float ArmR;
+} PilotRawInput;
+
+typedef struct {
+    float Move_X;
+    float Move_Y;
+    
+    float ArmL;
+    float ArmR;
+} PilotFilteredInput;
+
+typedef struct {
+    float Move_X;
+    float Move_Y;
+    
+    float ArmL;
+    float ArmR;
+} PilotOutput;
+
+typedef struct {
+    PilotRawInput RawInput;
+    PilotFilteredInput FilteredInput;
+    PilotOutput Output;
 
     // Pilot overall effectiveness | Input = BaseSkill [.85f] * SyncRatio * (1 - Fatigue) * (1 - Trauma) * InputFactor
     // InputFactor = 1.0f - fabsf(Pilot -> Move_X - Pilot -> Move_X_Previous) * 0.1f - fabsf(Pilot -> Move_Y - pilot -> Move_Y_Previous) * 0.1f;

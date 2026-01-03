@@ -17,6 +17,7 @@
 
 // Updates
 
+void UPDATE_Battery(void);
 void UPDATE_Input(void);
 void UPDATE_Sync(void);
 void UPDATE_RC(void);
